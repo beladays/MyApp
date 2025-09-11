@@ -1,24 +1,17 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { Stack } from "expo-router";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* Login fica como a tela inicial */}
+      <Stack.Screen name="index" />
+
+      {/* Ao logar, redireciona para o layout de abas */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+      {/* Tela de detalhe da notícia (fica fora das tabs) */}
+      <Stack.Screen name="news/[id]" options={{ title: "Detalhe da Notícia" }} />
+    </Stack>
   );
 }
+
