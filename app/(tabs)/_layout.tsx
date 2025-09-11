@@ -7,7 +7,7 @@ export default function TabsLayout() {
       <Tabs.Screen 
         name="news" 
         options={{ 
-          title: "Notícias", 
+          title: "Tela principal", 
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="newspaper-outline" size={size} color={color} />
           )

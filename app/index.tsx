@@ -9,7 +9,7 @@ export default function Login() {
 
   function handleLogin() {
     if (email && password) {
-      router.push("/noticias"); // vai para lista de notícias
+      router.push("/(tabs)/noticias"); // vai para lista de notícias
     } else {
       alert("Preencha email e senha!");
     }
