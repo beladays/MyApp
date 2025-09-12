@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
-import { View, StyleSheet } from "react-native";
-import { Text, Button, Title } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Button, Text, Title } from "react-native-paper";
 
 export default function Profile() {
   const router = useRouter();
@@ -24,7 +24,10 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+
   title: { fontSize: 24, marginBottom: 10 },
+
   info: { fontSize: 16, marginBottom: 5 },
+
   button: { marginTop: 20, borderRadius: 50 },
 });

@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, FlatList } from "react-native";
 import { useRouter } from "expo-router";
-import {Card,Title,Paragraph,ActivityIndicator,Text,Button,
-} from "react-native-paper";
+import { useEffect, useState } from "react";
+import { FlatList, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Button, Card, Paragraph, Text, Title, } from "react-native-paper";
 
-export default function NewsList() {
+export default function ListaNoticias() {
   const router = useRouter();
   const [articles, setArticles] = useState([]);
 
@@ -12,15 +11,16 @@ export default function NewsList() {
     fetch(
       `https://newsapi.org/v2/top-headlines?country=us&apiKey=87325e4de6b549b88d135dd420c62349`
     )
-      .then((res) => res.json())
+  .then((res) => res.json())
       .then((data) => setArticles(data.articles || []));
-  }, []);
+  }, 
+  []);
 
   if (articles.length === 0) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator animating size="large" />
-        <Text style={{ marginTop: 10 }}>Carregando notícias...</Text>
+    <Text style={{ marginTop: 10 }}>Carregando notícias...</Text>
       </View>
     );
   }
@@ -37,7 +37,7 @@ export default function NewsList() {
         style={styles.mainCard}
         onPress={() =>
           router.push({
-            pathname: "/noticias/[id]",
+          pathname: "/noticias/[id]",
             params: { id: 0, article: JSON.stringify(principal) },
           })
         }
@@ -47,12 +47,10 @@ export default function NewsList() {
         )}
         <Card.Content>
           <Title style={styles.mainHeadline}>{principal.title}</Title>
-          <Paragraph numberOfLines={3} style={styles.mainDesc}>
-            {principal.description}
+          <Paragraph numberOfLines={3} style={styles.mainDesc}> {principal.description}
           </Paragraph>
         </Card.Content>
       </Card>
-
 
       <FlatList
         data={outras}
@@ -62,8 +60,7 @@ export default function NewsList() {
             style={styles.smallCard}
             onPress={() =>
               router.push({
-                pathname: "/noticias/[id]",
-                params: { id: index + 1, article: JSON.stringify(item) },
+                pathname: "/noticias/[id]", params: { id: index + 1, article: JSON.stringify(item) },
               })
             }
           >
@@ -88,7 +85,11 @@ export default function NewsList() {
                   })
                 }
               >
-                Leia mais
+                
+                
+                Leia mais...
+
+
               </Button>
             </Card.Content>
           </Card>
@@ -100,31 +101,23 @@ export default function NewsList() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 12, backgroundColor: "#f9f9f9" },
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    marginBottom: 14,
-    textAlign: "center",
-    color: "#222",
+  title: {fontSize: 26,fontWeight: "bold",
+    marginBottom: 14,textAlign: "center",color: "#222",
   },
 
 //princ
   mainCard: { marginBottom: 20 },
-  mainHeadline: { fontSize: 20, fontWeight: "bold", marginTop: 8,
-    lineHeight: 26, 
+  mainHeadline: { fontSize: 20, fontWeight: "bold", marginTop: 8,lineHeight: 26, 
     color: "#111",
   },
   mainDesc: { 
     fontSize: 15, color: "#444", 
-    marginTop: 6, 
-    lineHeight: 22,
+    marginTop: 6,  lineHeight: 22,
   },
 
   // Noutras
   smallCard: {
-    marginBottom: 14, borderRadius: 12,
-    overflow: "hidden",
-    backgroundColor: "#fff",elevation: 2, 
+    marginBottom: 14, borderRadius: 12,overflow: "hidden", backgroundColor: "#fff",
   },
   smallThumb: {
     height: 120,
