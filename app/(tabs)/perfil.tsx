@@ -1,27 +1,30 @@
-import { View, Text, StyleSheet, Button } from "react-native";
 import { useRouter } from "expo-router";
+import { View, StyleSheet } from "react-native";
+import { Text, Button, Title } from "react-native-paper";
 
 export default function Profile() {
   const router = useRouter();
 
   function handleLogout() {
-    router.replace("/"); 
+    router.replace("/");
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Perfil do Usuário</Text>
-      <Text>Nome: Isabela Dias</Text>
-      <Text>Email: isabela@gmail.com</Text>
+      <Title style={styles.title}>Perfil do Usuário</Title>
+      <Text style={styles.info}>Nome: Isabela Dias</Text>
+      <Text style={styles.info}>Email: isabela@gmail.com</Text>
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Sair" color="red" onPress={handleLogout} />
-      </View>
+      <Button mode="contained" buttonColor="red" onPress={handleLogout} style={styles.button}>
+        Sair
+      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 24, marginBottom: 10 }
+  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  title: { fontSize: 24, marginBottom: 10 },
+  info: { fontSize: 16, marginBottom: 5 },
+  button: { marginTop: 20, borderRadius: 50 },
 });

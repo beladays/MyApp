@@ -3,14 +3,14 @@ import { Stack } from "expo-router";
 export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {/* Login fica como a tela inicial */}
+      {/* Login  */}
       <Stack.Screen name="index" />
 
-      {/* Ao logar, redireciona para o layout de abas */}
+      {/* layout de abas dps q loga */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-      {/* Tela de detalhe da notícia (fica fora das tabs) */}
-      <Stack.Screen name="news/[id]" options={{ title: "Detalhe da Notícia" }} />
+      {/* detalhes das news */}
+      <Stack.Screen name="noticias/[id]" options={{ title: "Detalhe da Notícia" }} />
     </Stack>
   );
 }

@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useState } from "react";
+import { View, StyleSheet } from "react-native";
+import { Text, TextInput, Button, Title } from "react-native-paper";
 
 export default function Login() {
   const router = useRouter();
@@ -9,102 +10,55 @@ export default function Login() {
 
   function handleLogin() {
     if (email && password) {
-      router.push("/(tabs)/noticias"); 
+      router.push("/(tabs)/noticias");
     } else {
       alert("Preencha email e senha!");
     }
   }
 
   function handleCadastro() {
-    router.push("/cadastro"); 
+    router.push("/cadastro");
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tela de login </Text>
+      <Title style={styles.title}>Tela de Login</Title>
 
-      <TextInput 
-        style={styles.input} 
-        placeholder="Digite seu email" 
-        placeholderTextColor="#888"
+      <TextInput
+        label="Email"
+        mode="outlined"
         keyboardType="email-address"
-        value={email} 
-        onChangeText={setEmail} 
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
       />
 
-      <TextInput 
-        style={styles.input} 
-        placeholder="Digite sua senha" 
-        placeholderTextColor="#888"
-        secureTextEntry 
-        value={password} 
-        onChangeText={setPassword} 
+      <TextInput
+        label="Senha"
+        mode="outlined"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
       />
 
-      <Text style={styles.registerText}>
-         <Text style={styles.link}>Esqueceu a senha?</Text>
-      </Text>
+      <Text style={styles.forgot}>Esqueceu a senha?</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
+      <Button mode="contained" onPress={handleLogin} style={styles.button}>
+        Entrar
+      </Button>
 
-      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-
-       
-
-      
+      <Button mode="outlined" onPress={handleCadastro} style={styles.button}>
+        Cadastrar
+      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
- 
-  container: { 
-    flex: 1, 
-    justifyContent: "center", 
-    alignItems: "center", 
-    backgroundColor: "#f2f2f2", 
-    padding: 20 
-  },
-  title: { 
-    fontSize: 32, 
-    fontWeight: "bold", 
-    marginBottom: 40, 
-    color: "#0852a1ff" 
-  },
-  input: { 
-    width: "90%", 
-    borderWidth: 1, 
-    borderColor: "#ccc", 
-    backgroundColor: "#fff", 
-    marginBottom: 15, 
-    padding: 12, 
-    borderRadius: 40, 
-    fontSize: 16 
-  },
-  button: { 
-    backgroundColor: "#0852a1ff", 
-    paddingVertical: 14, 
-    borderRadius: 50, 
-    width: "45%", 
-    alignItems: "center", 
-    marginTop: 20 
-  },
-  buttonText: { 
-    color: "#fff", 
-    fontSize: 18, 
-    fontWeight: "bold" 
-  },
-  registerText: { 
-    marginTop: 20, 
-    fontSize: 14, 
-    color: "#555" 
-  },
-  link: { 
-    color: "#852a1ff", 
-    fontWeight: "bold", 
-  }
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#f2f2f2" },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, textAlign: "center", color: "#0852a1ff" },
+  input: { marginBottom: 15 },
+  forgot: { marginTop: 10, color: "#0852a1ff", textAlign: "right" },
+  button: { marginTop: 20, borderRadius: 50, backgroundColor: "#0852a1ff"},
 });

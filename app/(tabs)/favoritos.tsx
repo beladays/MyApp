@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Text, Title } from "react-native-paper";
 
 export default function Favorites() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Favoritos</Text>
+      <Title style={styles.title}>Favoritos</Title>
       <Text>Em breve...</Text>
     </View>
   );
@@ -11,5 +12,5 @@ export default function Favorites() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
-  title: { fontSize: 24, marginBottom: 10 }
+  title: { fontSize: 24, marginBottom: 10 },
 });
