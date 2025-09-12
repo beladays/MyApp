@@ -5,14 +5,14 @@ export default function Profile() {
   const router = useRouter();
 
   function handleLogout() {
-    router.replace("/"); // volta para a tela de login
+    router.replace("/"); 
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Perfil do Usuário</Text>
-      <Text>Nome: Usuário Teste</Text>
-      <Text>Email: usuario@email.com</Text>
+      <Text>Nome: Isabela Dias</Text>
+      <Text>Email: isabela@gmail.com</Text>
 
       <View style={{ marginTop: 20 }}>
         <Button title="Sair" color="red" onPress={handleLogout} />

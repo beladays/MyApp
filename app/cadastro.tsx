@@ -1,32 +1,36 @@
-import { useRouter } from "expo-router";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
-export default function Login() {
+export default function Cadastro() {
   const router = useRouter();
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [senha, setSenha] = useState("");
 
-  function handleLogin() {
-    if (email && password) {
-      router.push("/(tabs)/noticias"); 
+  function handleRegistrar() {
+    if (nome && email && senha) {
+      alert("Conta criada com sucesso!");
+      router.replace("/"); // volta para login
     } else {
-      alert("Preencha email e senha!");
+      alert("Preencha todos os campos!");
     }
-  }
-
-  function handleCadastro() {
-    router.push("/cadastro"); 
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tela de login </Text>
+      <Text style={styles.title}>Cadastro</Text>
 
       <TextInput 
         style={styles.input} 
-        placeholder="Digite seu email" 
-        placeholderTextColor="#888"
+        placeholder="Nome completo" 
+        value={nome} 
+        onChangeText={setNome} 
+      />
+
+      <TextInput 
+        style={styles.input} 
+        placeholder="Email" 
         keyboardType="email-address"
         value={email} 
         onChangeText={setEmail} 
@@ -34,34 +38,25 @@ export default function Login() {
 
       <TextInput 
         style={styles.input} 
-        placeholder="Digite sua senha" 
-        placeholderTextColor="#888"
-        secureTextEntry 
-        value={password} 
-        onChangeText={setPassword} 
+        placeholder="Senha" 
+        secureTextEntry
+        value={senha} 
+        onChangeText={setSenha} 
       />
 
-      <Text style={styles.registerText}>
-         <Text style={styles.link}>Esqueceu a senha?</Text>
-      </Text>
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+      <TouchableOpacity style={styles.button} onPress={handleRegistrar}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-       
-
-      
+      {/* Botão de voltar */}
+      <TouchableOpacity style={[styles.button, styles.backButton]} onPress={() => router.back()}>
+        <Text style={styles.buttonText}>Voltar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
- 
   container: { 
     flex: 1, 
     justifyContent: "center", 
@@ -89,22 +84,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#0852a1ff", 
     paddingVertical: 14, 
     borderRadius: 50, 
-    width: "45%", 
+    width: "52%", 
     alignItems: "center", 
     marginTop: 20 
+  },
+  backButton: {
+    backgroundColor: "#888", 
   },
   buttonText: { 
     color: "#fff", 
     fontSize: 18, 
     fontWeight: "bold" 
   },
-  registerText: { 
-    marginTop: 20, 
-    fontSize: 14, 
-    color: "#555" 
-  },
-  link: { 
-    color: "#852a1ff", 
-    fontWeight: "bold", 
-  }
 });

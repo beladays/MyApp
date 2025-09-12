@@ -5,7 +5,7 @@ export default function TabsLayout() {
   return (
     <Tabs screenOptions={{ headerShown: true }}>
       <Tabs.Screen 
-        name="news" 
+        name="noticias" 
         options={{ 
           title: "Tela principal", 
           tabBarIcon: ({ color, size }) => (
@@ -14,7 +14,7 @@ export default function TabsLayout() {
         }} 
       />
       <Tabs.Screen 
-        name="favorites" 
+        name="favoritos" 
         options={{ 
           title: "Favoritos", 
           tabBarIcon: ({ color, size }) => (
@@ -23,7 +23,7 @@ export default function TabsLayout() {
         }} 
       />
       <Tabs.Screen 
-        name="profile" 
+        name="perfil" 
         options={{ 
           title: "Perfil", 
           tabBarIcon: ({ color, size }) => (
