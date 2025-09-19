@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { Text, TextInput, Button, Title } from "react-native-paper";
 
 export default function Cadastro() {
@@ -20,24 +20,97 @@ export default function Cadastro() {
 
   return (
     <View style={styles.container}>
+
+      <Image
+        source={ require('../assets/images/provisoria.png')}
+        style={styles.logo}
+      />
+
       <Title style={styles.title}>Cadastro</Title>
+      <Text style={styles.subtitle}>Preencha os campos abaixo para criar sua conta</Text>
 
-      <TextInput label="Nome completo" mode="outlined" value={nome} onChangeText={setNome} style={styles.input} />
-      <TextInput label="Email" mode="outlined" keyboardType="email-address" value={email} onChangeText={setEmail} style={styles.input} />
-      <TextInput label="Senha" mode="outlined" secureTextEntry value={senha} onChangeText={setSenha} style={styles.input} />
+      <TextInput
+        label="Nome completo"
+        mode="outlined"
+        value={nome}
+        onChangeText={setNome}
+        style={styles.input}
+      />
+      <TextInput
+        label="Email"
+        mode="outlined"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
+      <TextInput
+        label="Senha"
+        mode="outlined"
+        secureTextEntry
+        value={senha}
+        onChangeText={setSenha}
+        style={styles.input}
+      />
 
-      <Button mode="contained" onPress={handleRegistrar} style={styles.button}> Cadastrar</Button>
+      <Button
+        mode="contained"
+        onPress={handleRegistrar}
+        style={styles.button}
+        contentStyle={{ paddingVertical: 5 }}
+      >
+        Cadastrar
+      </Button>
 
-      <Button mode="outlined" onPress={() => router.back()} style={[styles.button, styles.backButton]}>
-        Voltar</Button>
+      <Button
+        mode="text"
+        onPress={() => router.back()}
+        labelStyle={{ color: "#6a0dad", fontWeight: "bold" }}
+        style={styles.backButton}
+      >
+        Voltar
+      </Button>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#f2f2f2" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, textAlign: "center", color: "#0852a1ff" },
-  input: { marginBottom: 15 },
-  button: { marginTop: 20, borderRadius: 50, backgroundColor: "#0852a1ff"  },
-  backButton: { backgroundColor: "#888", color: "white" },
+  container: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center",
+    padding: 20, 
+    backgroundColor: "#ffffff" 
+  },
+  logo: { 
+    width: 80, 
+    height: 80, 
+    marginBottom: 20 
+  },
+  title: { 
+    fontSize: 26, 
+    fontWeight: "bold", 
+    marginBottom: 5, 
+    textAlign: "center", 
+    color: "#6a0dad" // roxo
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 30,
+    textAlign: "center"
+  },
+  input: { 
+    width: "100%", 
+    marginBottom: 15 
+  },
+  button: { 
+    marginTop: 20, 
+    borderRadius: 30, 
+    width: "100%",
+    backgroundColor: "#6a0dad" 
+  },
+  backButton: {
+    marginTop: 15
+  }
 });

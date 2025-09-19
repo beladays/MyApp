@@ -3,15 +3,16 @@ import { Stack } from "expo-router";
 export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
- 
-      <Stack.Screen name="index" />
+      {/* Abre Tabs primeiro (Home, Favoritos, Perfil) */}
+      <Stack.Screen name="(tabs)" />
 
-
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-
+      {/* Detalhe da notícia */}
       <Stack.Screen name="noticias/[id]" options={{ title: "Detalhe da Notícia" }} />
+
+      {/* Login/Cadastro ainda existem, mas só são chamadas manualmente */}
+      <Stack.Screen name="index" />
+      <Stack.Screen name="cadastro" />
+      <Stack.Screen name="modal" />
     </Stack>
   );
 }
-

@@ -12,10 +12,18 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <Title style={styles.title}>Perfil do Usuário</Title>
-      <Text style={styles.info}>Nome: Isabela Dias</Text>
-      <Text style={styles.info}>Email: isabela@gmail.com</Text>
+      <Text style={styles.infoLabel}>Nome:</Text>
+      <Text style={styles.infoValue}>Isabela Dias</Text>
+      <Text style={styles.infoLabel}>Email:</Text>
+      <Text style={styles.infoValue}>isabela@gmail.com</Text>
 
-      <Button mode="contained" buttonColor="red" onPress={handleLogout} style={styles.button}>
+      <Button
+        mode="contained"
+        buttonColor="#6a0dad"
+        onPress={handleLogout}
+        style={styles.button}
+        contentStyle={{ paddingVertical: 10 }}
+      >
         Sair
       </Button>
     </View>
@@ -23,11 +31,38 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+  container: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center", 
+    padding: 20, 
+    backgroundColor: "#f5f0fa", // roxo clarinho de fundo
+  },
 
-  title: { fontSize: 24, marginBottom: 10 },
+  title: { 
+    fontSize: 26, 
+    fontWeight: "bold", 
+    marginBottom: 30, 
+    color: "#6a0dad",
+    textAlign: "center",
+  },
 
-  info: { fontSize: 16, marginBottom: 5 },
+  infoLabel: {
+    fontSize: 16,
+    color: "#555",
+    fontWeight: "600",
+  },
 
-  button: { marginTop: 20, borderRadius: 50 },
+  infoValue: {
+    fontSize: 18,
+    color: "#222",
+    marginBottom: 15,
+  },
+
+  button: { 
+    marginTop: 30, 
+    borderRadius: 30, 
+    width: "60%", 
+    elevation: 3, // leve sombra
+  },
 });

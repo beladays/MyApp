@@ -30,117 +30,144 @@ export default function ListaNoticias() {
 
   return (
     <ScrollView style={styles.container}>
+    <View style={styles.header}>
       <Title style={styles.title}>Últimas Notícias</Title>
+      <Button
+        mode="text"
+        icon="account-circle"
+        onPress={() => router.push("/")}
+        color="#6a0dad"
+      />
+    </View>
 
-
-      <Card
-        style={styles.mainCard}
-        onPress={() =>
-          router.push({
+    <Card
+      style={styles.mainCard}
+      onPress={() =>
+        router.push({
           pathname: "/noticias/[id]",
-            params: { id: 0, article: JSON.stringify(principal) },
-          })
-        }
-      >
-        {principal.urlToImage && (
-          <Card.Cover source={{ uri: principal.urlToImage }} />
-        )}
-        <Card.Content>
-          <Title style={styles.mainHeadline}>{principal.title}</Title>
-          <Paragraph numberOfLines={3} style={styles.mainDesc}> {principal.description}
-          </Paragraph>
-        </Card.Content>
-      </Card>
+          params: { id: 0, article: JSON.stringify(principal) },
+        })
+      }
+    >
+      {principal.urlToImage && <Card.Cover source={{ uri: principal.urlToImage }} />}
+      <Card.Content>
+        <Title style={styles.mainHeadline}>{principal.title}</Title>
+        <Paragraph numberOfLines={3} style={styles.mainDesc}>
+          {principal.description}
+        </Paragraph>
+      </Card.Content>
+    </Card>
 
-      <FlatList
-        data={outras}
-        keyExtractor={(item, index) => (index + 1).toString()}
-        renderItem={({ item, index }) => (
-          <Card
-            style={styles.smallCard}
-            onPress={() =>
-              router.push({
-                pathname: "/noticias/[id]", params: { id: index + 1, article: JSON.stringify(item) },
-              })
-            }
-          >
+
+    <FlatList
+      data={outras}
+      keyExtractor={(item, index) => (index + 1).toString()}
+      renderItem={({ item, index }) => (
+        <Card
+          style={styles.smallCard}
+          onPress={() =>
+            router.push({
+              pathname: "/noticias/[id]",
+              params: { id: index + 1, article: JSON.stringify(item) },
+            })
+          }
+        >
+          <View style={styles.smallCardContent}>
             {item.urlToImage && (
               <Card.Cover source={{ uri: item.urlToImage }} style={styles.smallThumb} />
             )}
-            <Card.Content style={styles.smallContent}>
+            <View style={styles.smallTextContent}>
               <Title numberOfLines={2} style={styles.smallHeadline}>
                 {item.title}
               </Title>
               <Paragraph numberOfLines={2} style={styles.smallDesc}>
                 {item.description}
               </Paragraph>
-              <Button
-                compact
-                mode="text"
-                labelStyle={styles.leiaMais}
-                onPress={() =>
-                  router.push({
-                    pathname: "/noticias/[id]",
-                    params: { id: index + 1, article: JSON.stringify(item) },
-                  })
-                }
-              >
-                
-                
-                Leia mais...
+            </View>
+          </View>
+        </Card>
+      )}
+    />
+  </ScrollView>
 
-
-              </Button>
-            </Card.Content>
-          </Card>
-        )}
-      />
-    </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 12, backgroundColor: "#f9f9f9" },
-  title: {fontSize: 26,fontWeight: "bold",
-    marginBottom: 14,textAlign: "center",color: "#222",
+  container: {
+    flex: 1,
+    padding: 16, 
+    backgroundColor: "#f9f6ff", // roxo claro
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 32, 
+    fontWeight: "bold",
+    color: "#6a0dad",
+  },
+  
+  // Principal
+  mainCard: {
+    marginBottom: 24,
+    borderRadius: 20, 
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    elevation: 6, 
+  },
+  mainHeadline: {
+    fontSize: 24, 
+    fontWeight: "bold",
+    marginTop: 12,
+    lineHeight: 30,
+    color: "#6a0dad",
+  },
+  mainDesc: {
+    fontSize: 16,
+    color: "#4a4a4a", 
+    lineHeight: 24,
   },
 
-//princ
-  mainCard: { marginBottom: 20 },
-  mainHeadline: { fontSize: 20, fontWeight: "bold", marginTop: 8,lineHeight: 26, 
-    color: "#111",
-  },
-  mainDesc: { 
-    fontSize: 15, color: "#444", 
-    marginTop: 6,  lineHeight: 22,
-  },
-
-  // Noutras
+  // Outras
   smallCard: {
-    marginBottom: 14, borderRadius: 12,overflow: "hidden", backgroundColor: "#fff",
+    marginBottom: 16,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    elevation: 2,
+  },
+  smallCardContent: {
+    flexDirection: "row",
+    padding: 12,
   },
   smallThumb: {
-    height: 120,
-    resizeMode: "cover",
+    width: 100, 
+    height: 100,
+    borderRadius: 8,
+    marginRight: 12,
   },
-  smallContent: { paddingVertical: 8 },
+  smallTextContent: {
+    flex: 1,
+  },
   smallHeadline: {
     fontSize: 16,
     fontWeight: "600",
-    marginBottom: 6, lineHeight: 22,color: "#222",
+    marginBottom: 4,
+    lineHeight: 22,
+    color: "#6a0dad",
   },
-  smallDesc: { 
+  smallDesc: {
     fontSize: 13, 
-    color: "#666", lineHeight: 20, marginBottom: 6,
+    color: "#666",
+    lineHeight: 18,
   },
-  leiaMais: { 
-    fontSize: 13,  color: "#1976D2", 
-    fontWeight: "500",
-    textTransform: "uppercase",letterSpacing: 0.5,
-  }, 
-
   loading: {
-    flex: 1, justifyContent: "center",
-    alignItems: "center", marginTop: 50,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
   },
 });
