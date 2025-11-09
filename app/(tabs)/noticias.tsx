@@ -1,26 +1,63 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Button, Card, Paragraph, Text, Title, } from "react-native-paper";
+import React, { useEffect, useState } from "react";
+import { FlatList, ScrollView,StyleSheet,View,Alert,ImageSourcePropType,} from "react-native";
+import {ActivityIndicator,Button,Card,Paragraph,Text,Title,} from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function ListaNoticias() {
+// atributos p prisma
+interface Article {
+  id: number;
+  title: string;
+  summary?: string;
+  content: string;
+  author?: string;
+  imageUrl?: string;
+  publishedAt: string;
+}
+
+export default function Noticias() {
   const router = useRouter();
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // verificaçao de usuario
+  const checkLogin = async () => {
+    const token = await AsyncStorage.getItem("userToken");
+    setIsLoggedIn(!!token);
+  };
+
+  //  API noticias
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch("http://10.0.2.2:4000/api/articles");
+      const data = await response.json();
+      setArticles(data || []);
+    } catch (error) {
+      console.error("Erro ao buscar notícias:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch(
-      `https://newsapi.org/v2/top-headlines?country=us&apiKey=87325e4de6b549b88d135dd420c62349`
-    )
-  .then((res) => res.json())
-      .then((data) => setArticles(data.articles || []));
-  }, 
-  []);
+    checkLogin();
+    fetchArticles();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator animating size="large" />
+        <Text style={{ marginTop: 10 }}>Carregando notícias...</Text>
+      </View>
+    );
+  }
 
   if (articles.length === 0) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator animating size="large" />
-    <Text style={{ marginTop: 10 }}>Carregando notícias...</Text>
+        <Text>Nenhuma notícia encontrada.</Text>
       </View>
     );
   }
@@ -28,75 +65,88 @@ export default function ListaNoticias() {
   const principal = articles[0];
   const outras = articles.slice(1);
 
+  // abre notícia
+  const abrirNoticia = (article: Article) => {
+    if (!isLoggedIn) {
+      Alert.alert(
+        "Acesso restrito",
+        "Você precisa estar logado para ler a notícia completa.",
+        [
+          { text: "Fazer login", onPress: () => router.push("../index") },
+          { text: "Cancelar" },
+        ]
+      );
+      return;
+    }
+
+    router.push({
+      pathname: "/noticias/[id]",
+      params: { article: JSON.stringify(article) },
+    });
+  };
+
   return (
     <ScrollView style={styles.container}>
-    <View style={styles.header}>
-      <Title style={styles.title}>Últimas Notícias</Title>
-      <Button
-        mode="text"
-        icon="account-circle"
-        onPress={() => router.push("/")}
-        color="#6a0dad"
-      />
-    </View>
-
-    <Card
-      style={styles.mainCard}
-      onPress={() =>
-        router.push({
-          pathname: "/noticias/[id]",
-          params: { id: 0, article: JSON.stringify(principal) },
-        })
-      }
-    >
-      {principal.urlToImage && <Card.Cover source={{ uri: principal.urlToImage }} />}
-      <Card.Content>
-        <Title style={styles.mainHeadline}>{principal.title}</Title>
-        <Paragraph numberOfLines={3} style={styles.mainDesc}>
-          {principal.description}
-        </Paragraph>
-      </Card.Content>
-    </Card>
-
-
-    <FlatList
-      data={outras}
-      keyExtractor={(item, index) => (index + 1).toString()}
-      renderItem={({ item, index }) => (
-        <Card
-          style={styles.smallCard}
+      <View style={styles.header}>
+        <Title style={styles.title}>Últimas Notícias</Title>
+        <Button
+          mode="text"
+          icon="account-circle"
           onPress={() =>
-            router.push({
-              pathname: "/noticias/[id]",
-              params: { id: index + 1, article: JSON.stringify(item) },
-            })
+            isLoggedIn ? router.push("/perfil") : router.push("../index")
           }
-        >
-          <View style={styles.smallCardContent}>
-            {item.urlToImage && (
-              <Card.Cover source={{ uri: item.urlToImage }} style={styles.smallThumb} />
-            )}
-            <View style={styles.smallTextContent}>
-              <Title numberOfLines={2} style={styles.smallHeadline}>
-                {item.title}
-              </Title>
-              <Paragraph numberOfLines={2} style={styles.smallDesc}>
-                {item.description}
-              </Paragraph>
-            </View>
-          </View>
-        </Card>
-      )}
-    />
-  </ScrollView>
+          textColor="#6a0dad"
+        />
+      </View>
 
+      {/* Notícia principal */}
+      <Card style={styles.mainCard} onPress={() => abrirNoticia(principal)}>
+        {principal.imageUrl && (
+          <Card.Cover source={{ uri: principal.imageUrl }} />
+        )}
+        <Card.Content>
+          <Title style={styles.mainHeadline}>{principal.title}</Title>
+          <Paragraph numberOfLines={3} style={styles.mainDesc}>
+            {principal.summary}
+          </Paragraph>
+        </Card.Content>
+      </Card>
+
+      {/* Outras notícias */}
+      <FlatList
+        data={outras}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <Card style={styles.smallCard} onPress={() => abrirNoticia(item)}>
+            <View style={styles.smallCardContent}>
+              {item.imageUrl && (
+                <Card.Cover
+                  source={{ uri: item.imageUrl }}
+                  style={styles.smallThumb}
+                />
+              )}
+              <View style={styles.smallTextContent}>
+                <Title numberOfLines={2} style={styles.smallHeadline}>
+                  {item.title}
+                </Title>
+                <Paragraph numberOfLines={2} style={styles.smallDesc}>
+                  {item.summary}
+                </Paragraph>
+              </View>
+            </View>
+          </Card>
+        )}
+      />
+    </ScrollView>
   );
 }
+
+// css
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16, 
-    backgroundColor: "#f9f6ff", // roxo claro
+    padding: 16,
+    backgroundColor: "#f9f6ff",
   },
   header: {
     flexDirection: "row",
@@ -105,21 +155,19 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 32, 
+    fontSize: 32,
     fontWeight: "bold",
     color: "#6a0dad",
   },
-  
-  // Principal
   mainCard: {
     marginBottom: 24,
-    borderRadius: 20, 
+    borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#fff",
-    elevation: 6, 
+    elevation: 6,
   },
   mainHeadline: {
-    fontSize: 24, 
+    fontSize: 24,
     fontWeight: "bold",
     marginTop: 12,
     lineHeight: 30,
@@ -127,11 +175,9 @@ const styles = StyleSheet.create({
   },
   mainDesc: {
     fontSize: 16,
-    color: "#4a4a4a", 
+    color: "#4a4a4a",
     lineHeight: 24,
   },
-
-  // Outras
   smallCard: {
     marginBottom: 16,
     borderRadius: 12,
@@ -144,7 +190,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   smallThumb: {
-    width: 100, 
+    width: 100,
     height: 100,
     borderRadius: 8,
     marginRight: 12,
@@ -160,7 +206,7 @@ const styles = StyleSheet.create({
     color: "#6a0dad",
   },
   smallDesc: {
-    fontSize: 13, 
+    fontSize: 13,
     color: "#666",
     lineHeight: 18,
   },

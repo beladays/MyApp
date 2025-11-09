@@ -11,7 +11,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="noticias" // Primeira aba aberta
+        name="noticias" // Primeira tela
         options={{
           title: "Notícias",
           tabBarIcon: ({ color, size }) => (

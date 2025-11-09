@@ -22,7 +22,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      {/* Logo ou ícone do app */}
+      {/* Logo  */}
       <Image
         source={ require('../assets/images/provisoria.png')}
         style={styles.logo}
