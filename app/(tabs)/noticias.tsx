@@ -30,15 +30,26 @@ export default function Noticias() {
   //  API noticias
   const fetchArticles = async () => {
     try {
-      const response = await fetch("http://10.0.2.2:4000/api/articles");
+      const response = await fetch("http://localhost:4000/noticias"); 
       const data = await response.json();
-      setArticles(data || []);
-    } catch (error) {
-      console.error("Erro ao buscar notícias:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+       // ajusta os nomes para o frontend
+    const formatted = data.map((item: any) => ({
+      id: item.id,
+      title: item.titulo,
+      summary: item.descricao,
+      imageUrl: item.urlImagem,
+      content: item.conteudo,
+      publishedAt: item.createdAt || "",
+    }));
+
+      setArticles(formatted || []);
+  } catch (error) {
+    console.error("Erro ao buscar notícias:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     checkLogin();

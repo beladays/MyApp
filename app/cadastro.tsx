@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { Text, TextInput, Button, Title } from "react-native-paper";
+import api from "../app/services/api";
 
 export default function Cadastro() {
   const router = useRouter();
@@ -9,14 +10,23 @@ export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  function handleRegistrar() {
-    if (nome && email && senha) {
-      alert("Conta criada com sucesso!");
-      router.replace("/");
-    } else {
-      alert("Preencha todos os campos!");
-    }
+
+
+async function handleRegistrar() {
+  if (!nome || !email || !senha) {
+    alert("Preencha todos os campos!");
+    return;
   }
+
+  try {
+    await api.post("/auth/register", { nome, email, senha });
+    alert("Conta criada com sucesso!");
+    router.replace("/");
+  } catch (error) {
+    alert("Erro ao criar conta. Verifique os dados.");
+    console.error(error);
+  }
+}
 
   return (
     <View style={styles.container}>
