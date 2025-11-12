@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Image, Alert } from "react-native";
-import { Title, IconButton } from "react-native-paper";
-import { useLocalSearchParams } from "expo-router";
+import { ScrollView, StyleSheet, Image, Alert, View } from "react-native";
+import { Title, IconButton, Button } from "react-native-paper";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../services/api";
 
 export default function NewsDetail() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
+
   const [news, setNews] = useState<any>(null);
   const [isFavorito, setIsFavorito] = useState(false);
   const [favoritoId, setFavoritoId] = useState<number | null>(null);
@@ -15,8 +17,8 @@ export default function NewsDetail() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const idUser = await AsyncStorage.getItem("userId");
-      if (idUser) setUserId(Number(idUser));
+      const storedUserId = await AsyncStorage.getItem("userId");
+      if (storedUserId) setUserId(Number(storedUserId));
     };
     loadUser();
   }, []);
@@ -26,18 +28,22 @@ export default function NewsDetail() {
 
     const fetchNews = async () => {
       try {
-        const res = await api.get(`/noticias/${id}`);
-        setNews(res.data);
+        const { data: newsData } = await api.get(`/noticias/${id}`);
+        setNews(newsData);
 
-        // Verifica se já é favorito
-        const favRes = await api.get(`/favoritos/${userId}`);
-        const fav = favRes.data.find((f: any) => f.noticiaId === Number(id));
-        if (fav) {
+        const { data: favList } = await api.get(`/favoritos/${userId}`);
+        const favItem = favList.find((f: any) => f.noticiaId === Number(id));
+
+        if (favItem) {
           setIsFavorito(true);
-          setFavoritoId(fav.id);
+          setFavoritoId(favItem.id);
+        } else {
+          setIsFavorito(false);
+          setFavoritoId(null);
         }
       } catch (error) {
-        console.error("Erro ao buscar notícia ou favoritos:", error);
+        console.error(error);
+        Alert.alert("Erro ao carregar notícia");
       } finally {
         setLoading(false);
       }
@@ -54,40 +60,114 @@ export default function NewsDetail() {
         await api.delete(`/favoritos/${favoritoId}`);
         setIsFavorito(false);
         setFavoritoId(null);
+        Alert.alert("Notícia removida dos favoritos");
       } else {
-        const res = await api.post("/favoritos", { usuarioId: userId, noticiaId: Number(id) });
+        const { data } = await api.post("/favoritos", { usuarioId: userId, noticiaId: Number(id) });
         setIsFavorito(true);
-        setFavoritoId(res.data.id); // assume que retorna o id do favorito criado
+        setFavoritoId(data.id);
+        Alert.alert("Notícia adicionada aos favoritos");
       }
     } catch (error) {
-      console.error("Erro ao atualizar favorito:", error);
+      console.error(error);
       Alert.alert("Erro ao atualizar favorito");
     }
   };
 
-  if (loading) return <Title>Carregando...</Title>;
-  if (!news) return <Title>Notícia não encontrada</Title>;
+  if (loading) return <Title style={styles.centerText}>Carregando...</Title>;
+  if (!news) return <Title style={styles.centerText}>Notícia não encontrada</Title>;
 
   return (
-    <ScrollView style={styles.container}>
-      {news.urlImagem && <Image source={{ uri: news.urlImagem }} style={styles.image} />}
-      <Title style={styles.title}>{news.titulo}</Title>
+    <View style={styles.wrapper}>
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
+        {/* Imagem da notícia */}
+        {news.urlImagem && <Image source={{ uri: news.urlImagem }} style={styles.image} />}
 
-      <IconButton
-        icon={isFavorito ? "heart" : "heart-outline"}
-        iconColor="#e91e63"
-        size={28}
-        onPress={toggleFavorito}
-      />
+        {/* Título da notícia */}
+        <Title style={styles.title}>{news.titulo}</Title>
 
-      <Title style={styles.content}>{news.conteudo || news.descricao}</Title>
-    </ScrollView>
+        {/* Botão de favorito abaixo do título, canto esquerdo */}
+        <View style={styles.favButtonContainer}>
+          <IconButton
+            icon={isFavorito ? "heart" : "heart-outline"}
+            iconColor="#fff"
+            size={30}
+            onPress={toggleFavorito}
+            style={isFavorito ? styles.favActive : styles.favInactive}
+          />
+        </View>
+
+        {/* Conteúdo da notícia */}
+        <Title style={styles.content}>{news.conteudo || news.descricao}</Title>
+      </ScrollView>
+
+      {/* Botão de voltar fixo embaixo */}
+      <View style={styles.backButtonContainer}>
+        <Button
+          icon="arrow-left"
+          mode="contained"
+          onPress={() => router.push("/noticias")}
+          style={styles.backButton}
+          contentStyle={styles.backButtonContent}
+        >
+          Voltar
+        </Button>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  image: { width: "100%", height: 200, borderRadius: 12, marginBottom: 16 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  content: { fontSize: 16, lineHeight: 24 },
+  wrapper: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  favButtonContainer: {
+    alignSelf: "flex-start", // canto esquerdo
+    marginBottom: 16,
+  },
+  favActive: {
+    backgroundColor: "#e91e63",
+    borderRadius: 50,
+  },
+  favInactive: {
+    backgroundColor: "#ccc",
+    borderRadius: 50,
+  },
+  content: {
+    fontSize: 16,
+    lineHeight: 24,
+    marginTop: 10,
+  },
+  backButtonContainer: {
+    position: "absolute",
+    bottom: 32,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  backButton: {
+    borderRadius: 24,
+    width: 160,
+  },
+  backButtonContent: {
+    height: 50,
+  },
+  centerText: {
+    textAlign: "center",
+    marginTop: 20,
+  },
 });

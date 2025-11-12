@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { Text, Title, Card, IconButton } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "../services/api";
-import { useRouter } from "expo-router";
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, StyleSheet, Alert } from 'react-native';
+import { Text, Title, Card, IconButton } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../services/api';
 
 export default function Favorites() {
   const [favoritos, setFavoritos] = useState<any[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
-  const router = useRouter();
 
   const fetchFavoritos = async () => {
     if (!userId) return;
@@ -17,38 +16,34 @@ export default function Favorites() {
       setFavoritos(res.data);
     } catch (error) {
       console.error(error);
-      Alert.alert("Erro ao carregar favoritos");
+      Alert.alert('Erro ao carregar favoritos');
     }
   };
 
-  useEffect(() => {
+  // Carrega userId
+  React.useEffect(() => {
     const loadUser = async () => {
-      const id = await AsyncStorage.getItem("userId");
+      const id = await AsyncStorage.getItem('userId');
       if (id) setUserId(Number(id));
     };
     loadUser();
   }, []);
 
-  useEffect(() => {
-    fetchFavoritos();
-  }, [userId]);
-
-  const toggleFavorito = async (favoritoId: number, noticiaId: number, isFav: boolean) => {
-    try {
-      if (isFav) {
-        await api.delete(`/favoritos/${favoritoId}`);
-      } else {
-        await api.post("/favoritos", { usuarioId: userId, noticiaId });
-      }
+  // Atualiza favoritos toda vez que a tela ganha foco
+  useFocusEffect(
+    useCallback(() => {
       fetchFavoritos();
+    }, [userId])
+  );
+
+  const removerFavorito = async (favoritoId: number) => {
+    try {
+      await api.delete(`/favoritos/${favoritoId}`);
+      fetchFavoritos(); // atualiza a lista após remoção
     } catch (error) {
       console.error(error);
-      Alert.alert("Erro ao atualizar favorito");
+      Alert.alert('Erro ao remover favorito');
     }
-  };
-
-  const irParaNoticia = (noticiaId: number) => {
-    router.push(`/noticias/${noticiaId}`);
   };
 
   return (
@@ -60,18 +55,16 @@ export default function Favorites() {
       ) : (
         favoritos.map(f => (
           <Card key={f.id} style={styles.card}>
-            <TouchableOpacity onPress={() => irParaNoticia(f.noticia.id)}>
-              <Card.Content>
-                <Title>{f.noticia.titulo}</Title>
-                <Text>{f.noticia.descricao}</Text>
-              </Card.Content>
-            </TouchableOpacity>
+            <Card.Content>
+              <Title>{f.noticia.titulo}</Title>
+              <Text>{f.noticia.descricao}</Text>
+            </Card.Content>
             <Card.Actions>
               <IconButton
-                icon={f ? "heart" : "heart-outline"}
+                icon="heart"
                 iconColor="#e91e63"
                 size={24}
-                onPress={() => toggleFavorito(f.id, f.noticia.id, true)}
+                onPress={() => removerFavorito(f.id)}
               />
             </Card.Actions>
           </Card>
@@ -83,6 +76,6 @@ export default function Favorites() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-  card: { marginBottom: 15, backgroundColor: "#fff" },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+  card: { marginBottom: 15, backgroundColor: '#fff' },
 });
