@@ -1,27 +1,55 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Text, Title, Card } from "react-native-paper";
+import { ScrollView, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { Text, Title, Card, IconButton } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/api";
+import { useRouter } from "expo-router";
 
 export default function Favorites() {
-  const [favoritos, setFavoritos] = useState([]);
+  const [favoritos, setFavoritos] = useState<any[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
+  const router = useRouter();
 
   const fetchFavoritos = async () => {
+    if (!userId) return;
     try {
-      const userId = await AsyncStorage.getItem("userId");
-      if (!userId) return;
-
-      const response = await api.get(`/favoritos/${userId}`);
-      setFavoritos(response.data);
+      const res = await api.get(`/favoritos/${userId}`);
+      setFavoritos(res.data);
     } catch (error) {
-      console.error("Erro ao buscar favoritos:", error);
+      console.error(error);
+      Alert.alert("Erro ao carregar favoritos");
     }
   };
 
   useEffect(() => {
-    fetchFavoritos();
+    const loadUser = async () => {
+      const id = await AsyncStorage.getItem("userId");
+      if (id) setUserId(Number(id));
+    };
+    loadUser();
   }, []);
+
+  useEffect(() => {
+    fetchFavoritos();
+  }, [userId]);
+
+  const toggleFavorito = async (favoritoId: number, noticiaId: number, isFav: boolean) => {
+    try {
+      if (isFav) {
+        await api.delete(`/favoritos/${favoritoId}`);
+      } else {
+        await api.post("/favoritos", { usuarioId: userId, noticiaId });
+      }
+      fetchFavoritos();
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro ao atualizar favorito");
+    }
+  };
+
+  const irParaNoticia = (noticiaId: number) => {
+    router.push(`/noticias/${noticiaId}`);
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -30,12 +58,22 @@ export default function Favorites() {
       {favoritos.length === 0 ? (
         <Text>Nenhum favorito ainda.</Text>
       ) : (
-        favoritos.map((fav: any) => (
-          <Card key={fav.id} style={styles.card}>
-            <Card.Content>
-              <Title>{fav.noticia.titulo}</Title>
-              <Text>{fav.noticia.descricao}</Text>
-            </Card.Content>
+        favoritos.map(f => (
+          <Card key={f.id} style={styles.card}>
+            <TouchableOpacity onPress={() => irParaNoticia(f.noticia.id)}>
+              <Card.Content>
+                <Title>{f.noticia.titulo}</Title>
+                <Text>{f.noticia.descricao}</Text>
+              </Card.Content>
+            </TouchableOpacity>
+            <Card.Actions>
+              <IconButton
+                icon={f ? "heart" : "heart-outline"}
+                iconColor="#e91e63"
+                size={24}
+                onPress={() => toggleFavorito(f.id, f.noticia.id, true)}
+              />
+            </Card.Actions>
           </Card>
         ))
       )}

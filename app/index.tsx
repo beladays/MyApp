@@ -20,10 +20,12 @@ export default function Login() {
       const response = await api.post("/auth/login", { email, senha: password });
       const { token, usuario } = response.data;
 
-     await AsyncStorage.setItem("userToken", response.data.token);
-await AsyncStorage.setItem("userNome", response.data.usuario.nome);
-await AsyncStorage.setItem("userEmail", response.data.usuario.email);
+      await AsyncStorage.setItem("userToken", token);
+      await AsyncStorage.setItem("userNome", usuario.nome);
+      await AsyncStorage.setItem("userEmail", usuario.email);
 
+      // SALVAID DO use
+      await AsyncStorage.setItem("userId", usuario.id.toString());
 
       router.push("/(tabs)/noticias");
     } catch (error) {

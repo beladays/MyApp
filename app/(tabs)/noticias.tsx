@@ -1,10 +1,24 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { FlatList, ScrollView,StyleSheet,View,Alert,ImageSourcePropType,} from "react-native";
-import {ActivityIndicator,Button,Card,Paragraph,Text,Title,} from "react-native-paper";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  View,
+  Alert,
+} from "react-native";
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  Paragraph,
+  Text,
+  Title,
+} from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../services/api"; // ← use seu axios aqui
 
-// atributos p prisma
+// Tipos para as notícias (compatível com Prisma)
 interface Article {
   id: number;
   title: string;
@@ -21,50 +35,76 @@ export default function Noticias() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // verificaçao de usuario
+  // 🔐 Verifica se o usuário está logado
   const checkLogin = async () => {
     const token = await AsyncStorage.getItem("userToken");
-    setIsLoggedIn(!!token);
+    if (!token) {
+      Alert.alert(
+        "Acesso restrito",
+        "Você precisa estar logado para acessar as notícias.",
+        [{ text: "Fazer login", onPress: () => router.replace("/") }]
+      );
+      return false;
+    }
+    setIsLoggedIn(true);
+    return true;
   };
 
-  //  API noticias
+  // 🌐 Busca as notícias da API
   const fetchArticles = async () => {
     try {
-      const response = await fetch("http://localhost:4000/noticias"); 
-      const data = await response.json();
+      const response = await api.get("/noticias");
+      const data = response.data;
 
-       // ajusta os nomes para o frontend
-    const formatted = data.map((item: any) => ({
-      id: item.id,
-      title: item.titulo,
-      summary: item.descricao,
-      imageUrl: item.urlImagem,
-      content: item.conteudo,
-      publishedAt: item.createdAt || "",
-    }));
+      const formatted = data.map((item: any) => ({
+        id: item.id,
+        title: item.titulo,
+        summary: item.descricao,
+        imageUrl: item.urlImagem,
+        content: item.conteudo,
+        publishedAt: item.createdAt || "",
+      }));
 
-      setArticles(formatted || []);
-  } catch (error) {
-    console.error("Erro ao buscar notícias:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      setArticles(formatted);
+    } catch (error) {
+      console.error("Erro ao buscar notícias:", error);
+      Alert.alert("Erro", "Não foi possível carregar as notícias.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // 🚀 Inicialização
   useEffect(() => {
-    checkLogin();
-    fetchArticles();
+    const init = async () => {
+      const logged = await checkLogin();
+      if (logged) fetchArticles();
+    };
+    init();
   }, []);
 
+  // 🚪 Logout
+  const handleLogout = async () => {
+    await AsyncStorage.multiRemove(["userToken", "userId"]);
+    router.replace("/");
+  };
+
+  // 📖 Abrir notícia
+const abrirNoticia = (article: Article) => {
+  router.push(`/noticias/${article.id}`);
+};
+
+  // 🌀 Carregando
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator animating size="large" />
+        <ActivityIndicator animating size="large" color="#6a0dad" />
         <Text style={{ marginTop: 10 }}>Carregando notícias...</Text>
       </View>
     );
   }
 
+  // 📰 Nenhuma notícia
   if (articles.length === 0) {
     return (
       <View style={styles.loading}>
@@ -76,38 +116,19 @@ export default function Noticias() {
   const principal = articles[0];
   const outras = articles.slice(1);
 
-  // abre notícia
-  const abrirNoticia = (article: Article) => {
-    if (!isLoggedIn) {
-      Alert.alert(
-        "Acesso restrito",
-        "Você precisa estar logado para ler a notícia completa.",
-        [
-          { text: "Fazer login", onPress: () => router.push("../index") },
-          { text: "Cancelar" },
-        ]
-      );
-      return;
-    }
-
-    router.push({
-      pathname: "/noticias/[id]",
-      params: { article: JSON.stringify(article) },
-    });
-  };
-
   return (
     <ScrollView style={styles.container}>
+      {/* Cabeçalho */}
       <View style={styles.header}>
         <Title style={styles.title}>Últimas Notícias</Title>
         <Button
           mode="text"
-          icon="account-circle"
-          onPress={() =>
-            isLoggedIn ? router.push("/perfil") : router.push("../index")
-          }
+          icon="logout"
+          onPress={handleLogout}
           textColor="#6a0dad"
-        />
+        >
+          Sair
+        </Button>
       </View>
 
       {/* Notícia principal */}
@@ -152,7 +173,7 @@ export default function Noticias() {
   );
 }
 
-// css
+// 🎨 Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -166,7 +187,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#6a0dad",
   },
@@ -178,16 +199,16 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   mainHeadline: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     marginTop: 12,
-    lineHeight: 30,
+    lineHeight: 28,
     color: "#6a0dad",
   },
   mainDesc: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#4a4a4a",
-    lineHeight: 24,
+    lineHeight: 22,
   },
   smallCard: {
     marginBottom: 16,
