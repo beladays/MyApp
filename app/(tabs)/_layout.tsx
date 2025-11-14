@@ -6,12 +6,12 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: true,
-        tabBarActiveTintColor: "#6a0dad", // roxo ativo
-        tabBarInactiveTintColor: "#999",   // cinza inativo
+        tabBarActiveTintColor: "#6a0dad", 
+        tabBarInactiveTintColor: "#999",   
       }}
     >
       <Tabs.Screen
-        name="noticias" // Primeira tela
+        name="noticias" 
         options={{
           title: "Notícias",
           tabBarIcon: ({ color, size }) => (

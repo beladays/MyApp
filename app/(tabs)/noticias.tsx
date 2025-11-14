@@ -1,24 +1,11 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  View,
-  Alert,
-} from "react-native";
-import {
-  ActivityIndicator,
-  Button,
-  Card,
-  Paragraph,
-  Text,
-  Title,
-} from "react-native-paper";
+import {FlatList, ScrollView,StyleSheet,View,Alert,} from "react-native";
+import {ActivityIndicator,Button,Card,Paragraph,Text,Title,} from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "../services/api"; // ← use seu axios aqui
+import api from "../services/api"; 
 
-// Tipos para as notícias (compatível com Prisma)
+
 interface Article {
   id: number;
   title: string;
@@ -35,7 +22,7 @@ export default function Noticias() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // 🔐 Verifica se o usuário está logado
+  // verificacao usuario logado???
   const checkLogin = async () => {
     const token = await AsyncStorage.getItem("userToken");
     if (!token) {
@@ -50,7 +37,7 @@ export default function Noticias() {
     return true;
   };
 
-  // 🌐 Busca as notícias da API
+  // noticias da api
   const fetchArticles = async () => {
     try {
       const response = await api.get("/noticias");
@@ -74,7 +61,7 @@ export default function Noticias() {
     }
   };
 
-  // 🚀 Inicialização
+  // 
   useEffect(() => {
     const init = async () => {
       const logged = await checkLogin();
@@ -83,18 +70,18 @@ export default function Noticias() {
     init();
   }, []);
 
-  // 🚪 Logout
+  //  Logout
   const handleLogout = async () => {
     await AsyncStorage.multiRemove(["userToken", "userId"]);
     router.replace("/");
   };
 
-  // 📖 Abrir notícia
+  // Abrir notícia
 const abrirNoticia = (article: Article) => {
   router.push(`/noticias/${article.id}`);
 };
 
-  // 🌀 Carregando
+  // coisinha de Carregando
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -104,7 +91,7 @@ const abrirNoticia = (article: Article) => {
     );
   }
 
-  // 📰 Nenhuma notícia
+  // Nenhuma notícia
   if (articles.length === 0) {
     return (
       <View style={styles.loading}>
@@ -121,6 +108,7 @@ const abrirNoticia = (article: Article) => {
       {/* Cabeçalho */}
       <View style={styles.header}>
         <Title style={styles.title}>Últimas Notícias</Title>
+
         <Button
           mode="text"
           icon="logout"
@@ -173,7 +161,7 @@ const abrirNoticia = (article: Article) => {
   );
 }
 
-// 🎨 Estilos
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

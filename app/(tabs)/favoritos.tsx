@@ -35,7 +35,7 @@ export default function Favorites() {
       fetchFavoritos();
     }, [userId])
   );
-
+//remover favs
   const removerFavorito = async (favoritoId: number) => {
     try {
       await api.delete(`/favoritos/${favoritoId}`);

@@ -11,7 +11,6 @@ export default function Cadastro() {
   const [senha, setSenha] = useState("");
 
 
-
 async function handleRegistrar() {
   if (!nome || !email || !senha) {
     alert("Preencha todos os campos!");
@@ -102,7 +101,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     marginBottom: 5, 
     textAlign: "center", 
-    color: "#6a0dad" // roxo
+    color: "#6a0dad" 
   },
   subtitle: {
     fontSize: 14,
